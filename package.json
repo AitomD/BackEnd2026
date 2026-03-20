@@ -1,0 +1,30 @@
+{
+  "name": "backend2026",
+  "version": "1.0.0",
+  "description": "Repositorio dedicado ao Back-End do site projetado nesse modulo",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AitomD/BackEnd2026.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AitomD/BackEnd2026/issues"
+  },
+  "homepage": "https://github.com/AitomD/BackEnd2026#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
