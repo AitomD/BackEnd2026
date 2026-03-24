@@ -8,12 +8,79 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  cpf       String   @unique
-  password  String
-  address   String    
-  active  
+  id       BigInt @id @default(autoincrement())
+  email    String @unique
+  cpf      String @unique
+  password String
+  address  String
+  active   Int
 }
+
+model Car {
+  id              BigInt    @id @default(autoincrement())
+  name            String
+  model           String
+  id_brand        BigInt // Foreign key
+  value           Decimal
+  status          CarStatus @default(Entregue)
+  date_registered DateTime  @default(now())
+  id_espec         BigInt // Foreign key
+  id_itens        BigInt // Foreign key
+  id_img          BigInt // Foreign key
+}
+
+enum CarStatus {
+  Entregue
+  Pendente
+  Processando
+}
+
+model Brand {
+  id BigInt @id @default(autoincrement())
+  name String 
+}
+
+model Itens {
+  id  BigInt   @id   @default(autoincrement())
+  airbag  Int  
+  alarme  Int
+  banco_de_couro  Int
+  controle_cruzeiro  Int
+  abs Int
+  computador_bordo  Int 
+}
+
+model Espec {
+  id BigInt   @id   @default(autoincrement())
+  year  Int 
+  fuel  Int
+  color String
+  transmission  String
+  engine  String
+  potency String
+  max_speed  String
+}
+
+model Cons {
+  id BigInt  @id   @default(autoincrement())
+  id_car Int
+  name  String
+}
+
+model Image {
+  id  BigInt  @id   @default(autoincrement())
+  url   String
+}
+
+model Garage {
+  id BigInt   @id   @default(autoincrement())
+  id_car  Int 
+  id_user Int
+  id_brand Int
+  date_buy BigInt
+}
+
+
+
 
 
