@@ -116,4 +116,3 @@ model Garage {
   user User @relation(fields: [userId], references: [id])
 }
 
-
