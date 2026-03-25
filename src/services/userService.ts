@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/database';
 import bcrypt from 'bcrypt';
-
-const prisma = new PrismaClient();
 
 export const createUserService = async (data:any) => {
     const saltRounds = 10;
@@ -18,8 +16,9 @@ export const createUserService = async (data:any) => {
             name: data.name,
             email: data.email,
             cpf: data.cpf,
+            cep: data.cep,
+            number:data.number,
             password: hashedPassword,
-            address: data.address,
             active: data.active
         }
     })

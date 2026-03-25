@@ -1,21 +1,7 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
+import app from './app';
 
-const app = express();
-
-app.use(cors({
-    origin: 'http:localhost:5173' // Somente o FrontEnd terá acesso ao back dessa aplicação
-}));  
-
-app.use(express.json()); // Permite que o express entenda o JSON no body da requisição
-
-const port = Number(process.env.PORT) || 3000; 
-
-app.get('/', (req, res) => {
-  res.json({ message: "Backend rodando com sucesso!" });
-});
+const port = Number(process.env.PORT) || 3000;
 
 app.listen(port, () => {
-  console.log(`Servidor online em http://localhost:${port}`);
+    console.log(`🚀 Servidor online em http://localhost:${port}`);
 });

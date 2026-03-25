@@ -29,8 +29,9 @@ model User {
   name     String   
   email    String   @unique
   cpf      String   @unique
+  cep      String
   password String
-  address  String
+  number   String   @unique
   active   Boolean  @default(true)
   garages  Garage[]
 }
