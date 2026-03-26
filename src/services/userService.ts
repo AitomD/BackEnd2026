@@ -24,7 +24,11 @@ export const createUserService = async (data:any) => {
     })
 }
  
-
+export const loginService = async (email:string) => {
+    return await prisma.user.findUnique({
+        where:{email},
+    })
+}
 
 
 

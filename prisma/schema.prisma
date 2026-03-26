@@ -31,7 +31,7 @@ model User {
   cpf      String   @unique
   cep      String
   password String
-  number   String   @unique
+  number   String?  
   active   Boolean  @default(true)
   garages  Garage[]
 }
