@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { createUserService, loginService } from '../services/userService';
 import bcrypt from 'bcrypt';
-
+import jwt from 'jsonwebtoken';
 
 export const register = async (req: Request, res: Response) => {
     try {
@@ -18,6 +18,7 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
+
         const user = await loginService(email);
 
         if (!user) {
@@ -30,19 +31,23 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ message: "E-mail ou senha incorretos" });
         }
 
-        res.status(200).json({
-            message: "Login realizado!",
-            user: {
-                name: user.name,
-                email: user.email,
-                password: user.password
-            }
-        });
-    } catch (error: any) {
-        res.status(500).json({ message: "Erro no servidor" });
-    }
-}
+        const token = jwt.sign(
+            { id: user.id, email: user.email },
+            process.env.JWT_SECRET as string,
+            { expiresIn: process.env.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
+        );
 
+        return res.status(200).json({
+            message: "Login realizado!",
+            token: token, 
+            user: { name: user.name, email: user.email }
+        });
+
+    } catch (error: any) {
+        console.error("Erro no login:", error);
+        return res.status(500).json({ message: "Erro interno no servidor" });
+    }
+};
 
 
 
