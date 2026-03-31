@@ -8,7 +8,7 @@ router.post('/users',register)
 router.post("/login", login);
 
 
-router.get('/me', authMiddleware, (req, res) => {
+router.get('/Garagem', authMiddleware, (req, res) => {
     res.json({ message: "Você está autenticado!", user: (req as any).user });
 });
 
