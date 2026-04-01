@@ -1,71 +1,422 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma, FuelType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Criando marcas padrão
+  // Limpar dados (ordem segura)
+  await prisma.image.deleteMany();
+  await prisma.car.deleteMany();
+
+  // Marcas
   await prisma.brand.createMany({
-  data: [
-    { name: "Lamborghini" },
-    { name: "Ferrari" },
-    { name: "Porsche" },
-    { name: "McLaren" },
-    { name: "Bugatti" },
-    { name: "Pagani" },
-    { name: "Koenigsegg" },
-    { name: "Rolls-Royce" },
-    { name: "Audi" },
-    { name: "BMW" },
-    { name: "Mercedes-Benz" }
-  ],
-  skipDuplicates: true
-});
+    data: [
+      { name: "Lamborghini" },
+      { name: "Ferrari" },
+      { name: "Porsche" },
+      { name: "McLaren" },
+      { name: "Bugatti" },
+      { name: "Pagani" },
+      { name: "Koenigsegg" },
+      { name: "Rolls-Royce" },
+      { name: "Audi" },
+      { name: "BMW" },
+      { name: "Mercedes-Benz" }
+    ],
+    skipDuplicates: true
+  });
 
-  // Criando um carro completo
-  await prisma.car.create({
-    data: {
-      name: "Ferrari 488",
-      model: "488 GTB",
-      value: 1800000,
+  const carros = [
 
-      brand: {
-        connect: { name: "Ferrari" }
-      },
+    // Lamborghini
+    {
+      name: "Lamborghini Huracán",
+      model: "Huracán EVO",
+      value: 2400000,
+      brandName: "Lamborghini",
 
       espec: {
-        create: {
-          year: 2021,
-          fuel: "Gasolina",
-          color: "Vermelho",
-          transmission: "Automático",
-          engine: "V8",
-          potency: "670cv",
-          max_speed: "330km/h"
-        }
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Amarelo",
+        transmission: "Automático",
+        engine: "V10",
+        potency: "640cv",
+        max_speed: "325km/h"
       },
 
       itens: {
-        create: {
-          airbag: true,
-          alarme: true,
-          banco_de_couro: true,
-          controle_cruzeiro: true,
-          abs: true,
-          computador_bordo: true
-        }
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
       },
 
-      images: {
-        create: [
-          { url: "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774997221/Ferrari2_qzdkkx.jpg" },
-          { url: "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774997225/Ferrari_l84qnw.jpg" },
-          { url: "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774997221/Ferrari3_xcvtn7.jpg"}
-        ]
-      }
-    }
-  });
-}
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774999662/lambo1_mi8aco.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774999663/lambo2_jlbwpe.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774999663/lambo3_gzsrfn.jpg"
+      ]
+    },
 
+    // Ferrari
+    {
+      name: "Ferrari 488",
+      model: "488 GTB",
+      value: 1800000,
+      brandName: "Ferrari",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Ciano",
+        transmission: "Automático",
+        engine: "V8",
+        potency: "670cv",
+        max_speed: "330km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774997221/Ferrari2_qzdkkx.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774997225/Ferrari_l84qnw.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1774997221/Ferrari3_xcvtn7.jpg"
+      ]
+    },
+
+    // Porsche
+    {
+      name: "Porsche 911",
+      model: "911 Carrera",
+      value: 950000,
+      brandName: "Porsche",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Prata",
+        transmission: "Automático",
+        engine: "3.0 Twin Turbo",
+        potency: "385cv",
+        max_speed: "293km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084333/porsche1_dnzaz5.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084330/porsche2_yfxwas.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084333/porsche3_uocgh3.jpg"
+      ]
+    },
+
+    // McLaren
+    {
+      name: "McLaren 720S",
+      model: "720S Coupe",
+      value: 2800000,
+      brandName: "McLaren",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Laranja",
+        transmission: "Automático",
+        engine: "4.0 V8 Twin Turbo",
+        potency: "720cv",
+        max_speed: "341km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084474/mclaren1_dwn0ze.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084475/mclaren2_puyeqy.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084475/mclaren3_f0lj0r.jpg"
+      ]
+    },
+    // Bugatti
+    {
+      name: "Bugatti Chiron",
+      model: "Chiron Sport",
+      value: 18000000,
+      brandName: "Bugatti",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Azul",
+        transmission: "Automático",
+        engine: "8.0 W16 Quad Turbo",
+        potency: "1500cv",
+        max_speed: "420km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084804/buggati1_dsbpbr.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084804/buggati2_mvkecn.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084804/buggati3_t87pe4.jpg"
+      ]
+    },
+
+    // Pagani
+    {
+      name: "Pagani Huayra",
+      model: "Huayra BC",
+      value: 18000000,
+      brandName: "Pagani",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Carbono Branco",
+        transmission: "Automático",
+        engine: "6.0 V12 Twin Turbo AMG",
+        potency: "802cv",
+        max_speed: "383km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085279/pagani1_fkqrgf.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085279/pagani2_fljs3l.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085279/pagani3_n3k5vb.jpg"
+      ]
+    },
+
+    //Koenigsegg
+    {
+      name: "Koenigsegg Jesko",
+      model: "Jesko Absolut",
+      value: 25000000,
+      brandName: "Koenigsegg",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Branco",
+        transmission: "Automático",
+        engine: "5.0 V8 Twin Turbo",
+        potency: "1600cv",
+        max_speed: "531km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085459/Koenigsegg1_wocstc.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085459/Koenigsegg2_eoy34k.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085459/Koenigsegg3_xmvyuh.jpg"
+      ]
+    },
+
+    //Rolls Royce
+    {
+      name: "Rolls-Royce Phantom",
+      model: "Phantom VIII",
+      value: 6000000,
+      brandName: "Rolls-Royce",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Preto",
+        transmission: "Automático",
+        engine: "6.75 V12 Twin Turbo",
+        potency: "571cv",
+        max_speed: "250km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085625/roll1_liqj8x.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085626/roll2_pwgysp.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085626/roll3_xkkjiu.jpg"
+      ]
+    },
+
+    //Audi
+    {
+      name: "Audi R8",
+      model: "R8 V10 Performance",
+      value: 1400000,
+      brandName: "Audi",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Preto",
+        transmission: "Automático",
+        engine: "5.2 V10 Aspirado",
+        potency: "620cv",
+        max_speed: "331km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085752/audi1_lf82ns.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085752/audi2_ra2pqo.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085752/audi3_sepk1t.jpg"
+      ]
+    },
+
+    //BMW
+    {
+      name: "BMW M4",
+      model: "M4 Competition",
+      value: 800000,
+      brandName: "BMW",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Azul",
+        transmission: "Automático",
+        engine: "3.0 Twin Turbo",
+        potency: "510cv",
+        max_speed: "290km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085846/bmw1_dorovm.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085846/bmw2_f31kwj.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085846/bmw3_mmwxb3.jpg"
+      ]
+    },
+
+    //Mercedes
+    {
+      name: "Mercedes-Benz AMG GT",
+      model: "AMG GT 63 S",
+      value: 1200000,
+      brandName: "Mercedes-Benz",
+
+      espec: {
+        year: 2023,
+        fuel: FuelType.Gasolina,
+        color: "Cinza",
+        transmission: "Automático",
+        engine: "4.0 V8 Biturbo",
+        potency: "639cv",
+        max_speed: "315km/h"
+      },
+
+      itens: {
+        airbag: true,
+        alarme: true,
+        banco_de_couro: true,
+        controle_cruzeiro: true,
+        abs: true,
+        computador_bordo: true
+      },
+
+      images: [
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085958/mercedez1_xfeqoh.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085958/mercedez2_t5c9n5.jpg",
+        "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775085959/mercedez3_uedvhb.jpg"
+      ]
+    }
+  ];
+
+  // 🔁 Loop para criar todos os carros
+  for (const carro of carros) {
+    await prisma.car.create({
+      data: {
+        name: carro.name,
+        model: carro.model,
+        value: new Prisma.Decimal(carro.value),
+
+        brand: {
+          connect: { name: carro.brandName }
+        },
+
+        espec: {
+          create: carro.espec
+        },
+
+        itens: {
+          create: carro.itens
+        },
+
+        images: {
+          create: carro.images.map((url) => ({ url }))
+        }
+      }
+    });
+  }
+}
 main()
   .then(() => {
     console.log("🌱 Seed finalizado");
