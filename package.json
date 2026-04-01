@@ -9,6 +9,9 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AitomD/BackEnd2026.git"
