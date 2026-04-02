@@ -32,6 +32,7 @@ export const loginService = async (email:string) => {
 
 
 export const getUserByIdService = async (id: string) => {
+    console.log("ID recebido no service:", id); 
     return await prisma.user.findUnique({
         where: { id },
         select: { 
@@ -43,6 +44,7 @@ export const getUserByIdService = async (id: string) => {
             number: true,
             active: true
         }
+        
     });
 };
 
