@@ -49,7 +49,7 @@ export const getUserByIdService = async (id: string) => {
 
 export const deleteUserController = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params; // Agora o TS reconhecerá o params
+    const { id } = req.params; 
     
     await prisma.user.update({
       where: { id: id as string },

@@ -37,14 +37,14 @@ export const updateUserController = async (req: Request, res: Response) => {
 
 export const deleteUserController = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id as string;
+    const id = req.params.id as string; 
     await prisma.user.update({
-      where: { id },
-      data: { active: false} 
+      where: { id: id }, 
+      data: { active: false } 
     });
-    return res.status(200).json({ message: "Usuário desativado com sucesso" });
+    return res.status(200).json({ message: "Usuário desativado" }); 
   } catch (error) {
-    return res.status(500).json({ message: "Erro ao deletar usuário" });
+    return res.status(500).json({ message: "Erro ao deletar" });
   }
 
 };

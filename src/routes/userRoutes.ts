@@ -6,6 +6,6 @@ const router = Router();
 
 router.get('/:id', getUserController);
 router.patch('/:id', authMiddleware, updateUserController);
-router.delete("/users/:id", deleteUserController);
+router.delete("/:id", deleteUserController);
 
 export default router;
