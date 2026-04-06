@@ -56,7 +56,6 @@ model Car {
   itens Itens @relation(fields: [itensId], references: [id], onDelete: Cascade)
 
   images  Image[]
-  cons    Cons[]
   garages Garage[]
 }
 
@@ -69,11 +68,11 @@ model Brand {
 model Itens {
   id                String  @id @default(uuid())
   airbag            Boolean @default(false)
-  alarme            Boolean @default(false)
-  banco_de_couro    Boolean @default(false)
-  controle_cruzeiro Boolean @default(false)
+  alarm           Boolean @default(false)
+  leather_seat    Boolean @default(false)
+  cruise_control Boolean @default(false)
   abs               Boolean @default(false)
-  computador_bordo  Boolean @default(false)
+  onBoard_computer Boolean @default(false)
   
   car Car? // Relação 1:1 inversa
 }
@@ -91,12 +90,6 @@ model Espec {
   car Car? // Relação 1:1 inversa
 }
 
-model Cons {
-  id    String @id @default(uuid())
-  name  String
-  carId String
-  car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
-}
 
 model Image {
   id    String @id @default(uuid())
