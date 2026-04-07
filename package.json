@@ -4,10 +4,11 @@
   "description": "Repositorio dedicado ao Back-End do site projetado nesse modulo",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "cp .env.example .env && npm install",
     "start": "node dist/server.js",
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "test": "jest",
+    "test:watch": "jest --watchAll"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
