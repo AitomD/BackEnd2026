@@ -97,28 +97,40 @@ model Image {
 }
 
 model Garage {
-  id       String   @id @default(uuid())
-  date_buy DateTime @default(now())
+  id           String         @id @default(uuid())
+  date_offer   DateTime       @default(now())
+  
+  offeredValue Decimal        @db.Decimal(10, 2)
+  message      String?        @db.Text
 
-  carId  String
-  userId String
+  status       ProposalStatus @default(Pendente)
 
-  car  Car  @relation(fields: [carId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  carId        String
+  userId       String
+
+  car          Car            @relation(fields: [carId], references: [id])
+  user         User           @relation(fields: [userId], references: [id])
+
+  @@unique([userId, carId, status]) 
 }
 
 model Favorite {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
 
-  // Chaves Estrangeiras
   userId String
   carId  String
 
-  // Relações
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   car  Car  @relation(fields: [carId], references: [id], onDelete: Cascade)
 
-  // Índice composto para garantir que um user não favorite o mesmo carro 2x
   @@unique([userId, carId])
+}
+
+enum ProposalStatus {
+  Pendente      // Usuário enviou, aguardando admin
+  EmAnalise     // Admin visualizou e está avaliando
+  Aceita        // Proposta aprovada
+  Recusada      // Proposta negada
+  ContraProposta // Admin sugeriu outro valor
 }

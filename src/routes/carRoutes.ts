@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getCars, getCarById } from "../services/carService"; // Importe a nova função
+import { getCars, getCarById } from "../services/carService"; 
 
 const router = Router();
 

@@ -4,4 +4,4 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-router.get('/favorites/:userId', authMiddleware ,toggleFavorite);
+router.get('/favorites/:id', authMiddleware ,toggleFavorite);
