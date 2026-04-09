@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes'; 
 import userRoutes from './routes/userRoutes';
+import carsRoutes from "./routes/carRoutes";
 import { authMiddleware } from './middlewares/authMiddleware';
 import { getUserController, updateUserController } from './controllers/userController';
 
@@ -13,7 +14,6 @@ const app = express();
 app.use(cors({
     origin: 'http://localhost:5173'
 }));
-app.use(express.json());
 
 
 app.get('/', (req, res) => {
@@ -22,6 +22,12 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
+
+//Retorna carros card
+app.use(express.json());
+
+// 👉 AQUI
+app.use('/cars', carsRoutes);
 
 export default app;
 

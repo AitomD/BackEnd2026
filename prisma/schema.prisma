@@ -48,7 +48,6 @@ model Car {
   especId String @unique
   itensId String @unique
 
-  // Relações (Prisma)
   // O 'onDelete: Cascade' apaga a ficha técnica se o carro for deletado
   brand Brand @relation(fields: [brandId], references: [id])
   espec Espec @relation(fields: [especId], references: [id], onDelete: Cascade)

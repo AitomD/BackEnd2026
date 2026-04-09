@@ -5,8 +5,9 @@ const prisma = new PrismaClient();
 async function main() {
   // Limpar dados (ordem segura)
   await prisma.image.deleteMany();
+  await prisma.itens.deleteMany();
+  await prisma.espec.deleteMany();
   await prisma.car.deleteMany();
-
   // Marcas
   await prisma.brand.createMany({
     data: [
@@ -392,23 +393,27 @@ async function main() {
 
   // 🔁 Loop para criar todos os carros
   for (const carro of carros) {
+    const espec = await prisma.espec.create({
+      data: carro.espec
+    });
+
+    const itens = await prisma.itens.create({
+      data: carro.itens
+    });
+
+    const brand = await prisma.brand.findUnique({
+      where: { name: carro.brandName }
+    });
+
     await prisma.car.create({
       data: {
         name: carro.name,
         model: carro.model,
         value: new Prisma.Decimal(carro.value),
 
-        brand: {
-          connect: { name: carro.brandName }
-        },
-
-        espec: {
-          create: carro.espec
-        },
-
-        itens: {
-          create: carro.itens
-        },
+        brandId: brand!.id,
+        especId: espec.id,
+        itensId: itens.id,
 
         images: {
           create: carro.images.map((url) => ({ url }))
@@ -417,6 +422,7 @@ async function main() {
     });
   }
 }
+
 main()
   .then(() => {
     console.log("🌱 Seed finalizado");
