@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/users',authMiddleware, userRoutes);
-app.use('/garage', userGarageRoutes);
+app.use("/garage", userGarageRoutes);
 
 
 // 👉 AQUI

@@ -1,86 +1,99 @@
 import { Request, Response } from "express";
+import { Prisma } from "@prisma/client";
 import prisma from "../config/database";
 
+const getUser = (req: Request) => (req as any).user?.id as string;
+const getId = (req: Request, param: string) => String(req.params[param]);
+const findProposal = (id: string) => prisma.garage.findUnique({ where: { id } });
+
 export const createProposal = async (req: Request, res: Response) => {
+  const userId = getUser(req);
+  if (!userId) return res.status(401).json({ error: "Não autenticado." });
+
+  const { offeredValue, message, carId } = req.body;
+  if (!carId || offeredValue == null) return res.status(400).json({ error: "carId e offeredValue obrigatórios." });
+
   try {
-    const { offeredValue, message, carId } = req.body;
-    const userId = (req as any).user?.id as string;
+    const alreadyExists = await prisma.garage.findFirst({ where: { userId, carId, status: "Pendente" } });
+    if (alreadyExists) return res.status(409).json({ error: "Já existe uma proposta pendente para este veículo." });
 
-    if (!userId) {
-      return res.status(401).json({ error: "Usuário não autenticado." });
-    }
-
-    if (!carId || !offeredValue) {
-      return res
-        .status(400)
-        .json({ error: "carId e offeredValue são obrigatórios." });
-    }
-
-    const firstImage = await prisma.image.findFirst({
-      where: { carId },
-      orderBy: { id: "asc" },
+    const proposal = await prisma.garage.create({
+      data: { offeredValue, message, carId, userId, status: "Pendente" }, // ✅ sem carImageUrl
     });
 
-    const newProposal = await prisma.garage.create({
-      data: {
-        offeredValue: offeredValue,
-        message: message,
-        carId: carId,
-        userId: userId,
-        carImageUrl: firstImage?.url,
-        status: "Pendente",
-      },
-    });
-
-    return res.status(201).json(newProposal);
+    return res.status(201).json(proposal);
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002")
+      return res.status(409).json({ error: "Já existe uma proposta igual em aberto." });
     console.error(error);
-    return res.status(500).json({ error: "Erro ao enviar proposta." });
+    return res.status(500).json({ error: "Erro ao criar proposta." });
   }
 };
-export const getUserProposals = async (req: Request, res: Response) => {
+
+export const updateProposal = async (req: Request, res: Response) => {
+  const userId = getUser(req);
+  if (!userId) return res.status(401).json({ error: "Não autenticado." });
+
+  const id = getId(req, "proposalId");
+  const { offeredValue, message } = req.body;
+  if (!offeredValue || isNaN(Number(offeredValue))) return res.status(400).json({ error: "offeredValue inválido." });
+
   try {
-    const sessionUserId = (req as any).user?.id as string;
-    const requestedUserId = req.params.id as string;
+    const proposal = await findProposal(id);
+    if (!proposal) return res.status(404).json({ error: "Proposta não encontrada." });
+    if (proposal.userId !== userId) return res.status(403).json({ error: "Acesso negado." });
 
-    if (!sessionUserId) {
-      return res.status(401).json({ error: "Usuário não autenticado." });
-    }
+    const updated = await prisma.garage.update({
+      where: { id },
+      data: { offeredValue: Number(offeredValue), message },
+    });
+    return res.status(200).json(updated);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao atualizar proposta." });
+  }
+};
 
+export const deleteProposal = async (req: Request, res: Response) => {
+  const userId = getUser(req);
+  if (!userId) return res.status(401).json({ error: "Não autenticado." });
+
+  const id = getId(req, "proposalId");
+
+  try {
+    const proposal = await findProposal(id);
+    if (!proposal) return res.status(404).json({ error: "Proposta não encontrada." });
+    if (proposal.userId !== userId) return res.status(403).json({ error: "Acesso negado." });
+
+    await prisma.garage.delete({ where: { id } });
+    return res.status(200).json({ message: "Excluída com sucesso." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao excluir proposta." });
+  }
+};
+
+export const getUserProposals = async (req: Request, res: Response) => {
+  const userId = getUser(req);
+  if (!userId) return res.status(401).json({ error: "Não autenticado." });
+  if (getId(req, "id") !== userId) return res.status(403).json({ error: "Acesso negado." });
+
+  try {
     const proposals = await prisma.garage.findMany({
-      where: { userId: sessionUserId },
-      include: {
-        car: {
-          select: {
-            name: true,
-            images: {
-              select: {
-                url: true,
-              },
-              orderBy: {
-                id: "asc",
-              },
-              take: 1,
-            },
-          },
-        },
-      },
-      orderBy: {
-        date_offer: "desc",
-      },
+      where: { userId },
+      include: { car: { select: { name: true, images: { select: { url: true }, orderBy: { id: "asc" }, take: 1 } } } },
+      orderBy: { date_offer: "desc" },
     });
 
-    // Mapeia os dados para garantir que o frontend receba um formato consistente
-    const formattedProposals = proposals.map((proposal) => ({
-      id: proposal.id,
-      offeredValue: proposal.offeredValue,
-      status: proposal.status,
-      imgUrl: proposal.car?.images[0]?.url || proposal.carImageUrl || null,
-      name: proposal.car?.name || "Veículo não identificado",
-      message: proposal.message,
-    }));
-
-    return res.status(200).json(formattedProposals);
+    return res.status(200).json(proposals.map((p) => ({
+      id: p.id,
+      offeredValue: p.offeredValue,
+      status: p.status,
+      imgUrl: p.car?.images[0]?.url ?? null,
+      name: p.car?.name ?? "Veículo não identificado",
+      message: p.message,
+      date_offer: p.date_offer
+    })));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erro ao buscar propostas." });
