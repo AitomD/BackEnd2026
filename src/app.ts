@@ -6,7 +6,7 @@ import userRoutes from './routes/userRoutes';
 import carsRoutes from "./routes/carRoutes";
 import { authMiddleware } from './middlewares/authMiddleware';
 import { getUserController, updateUserController } from './controllers/userController';
-
+import userGarageRoutes from './routes/userGarageRoutes';
 
 const app = express();
 app.use(express.json());
@@ -22,9 +22,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', authRoutes);
-app.use('/users', userRoutes);
+app.use('/users',authMiddleware, userRoutes);
+app.use('/garage', userGarageRoutes);
 
-//Retorna carros card
 
 // 👉 AQUI
 app.use('/cars', carsRoutes);

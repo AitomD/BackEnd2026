@@ -1,7 +1,13 @@
-import { Router } from 'express';
-import { toggleFavorite} from '../controllers/favoriteController'
-import { authMiddleware } from '../middlewares/authMiddleware';
+import { Router } from "express";
+import { authMiddleware } from "../middlewares/authMiddleware";
+import {
+  createProposal,
+  getUserProposals,
+} from "../controllers/garageController";
 
 const router = Router();
 
-router.get('/favorites/:id', authMiddleware ,toggleFavorite);
+router.get("/:id", authMiddleware, getUserProposals);
+router.post("/proposals", authMiddleware, createProposal);
+
+export default router;

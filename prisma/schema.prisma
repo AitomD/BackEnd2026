@@ -97,21 +97,22 @@ model Image {
 }
 
 model Garage {
-  id           String         @id @default(uuid())
-  date_offer   DateTime       @default(now())
-  
-  offeredValue Decimal        @db.Decimal(10, 2)
-  message      String?        @db.Text
+  id         String   @id @default(uuid())
+  date_offer DateTime @default(now())
 
-  status       ProposalStatus @default(Pendente)
+  offeredValue Decimal @db.Decimal(10, 2)
+  message      String? @db.Text
+  carImageUrl  String?
 
-  carId        String
-  userId       String
+  status ProposalStatus @default(Pendente)
 
-  car          Car            @relation(fields: [carId], references: [id])
-  user         User           @relation(fields: [userId], references: [id])
+  carId  String
+  userId String
 
-  @@unique([userId, carId, status]) 
+  car  Car  @relation(fields: [carId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, carId, status])
 }
 
 model Favorite {
@@ -128,9 +129,9 @@ model Favorite {
 }
 
 enum ProposalStatus {
-  Pendente      // Usuário enviou, aguardando admin
-  EmAnalise     // Admin visualizou e está avaliando
-  Aceita        // Proposta aprovada
-  Recusada      // Proposta negada
+  Pendente // Usuário enviou, aguardando admin
+  EmAnalise // Admin visualizou e está avaliando
+  Aceita // Proposta aprovada
+  Recusada // Proposta negada
   ContraProposta // Admin sugeriu outro valor
 }
