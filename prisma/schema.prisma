@@ -118,6 +118,7 @@ model Garage {
 model Favorite {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
+  message   String?  @db.Text
 
   userId String
   carId  String
