@@ -6,6 +6,9 @@ const formatCar = (car: any) => ({
   id: car.id,
   name: car.name,
   brand: car.brand.name,
+  category: { 
+    name: car.category?.name || "Sem Categoria"
+  },
   price: Number(car.value),
   imgUrl: car.images[0]?.url || "",
   year: car.espec.year,
@@ -22,6 +25,7 @@ export async function getCars() {
       brand: true,
       espec: true,
       images: true,
+      category: true,
     },
   });
 

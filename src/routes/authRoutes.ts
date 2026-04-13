@@ -14,12 +14,3 @@ router.get('/Garagem/:id', authMiddleware, (req, res) => {
 });
 
 export default router;
-
-
-
-
-
-
-
-
-

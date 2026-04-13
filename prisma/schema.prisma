@@ -39,6 +39,8 @@ model Car {
   id              String    @id @default(uuid())
   name            String
   model           String
+  categoryId      String
+  category        Category  @relation(fields: [categoryId], references: [id])
   value           Decimal   @db.Decimal(10, 2)
   status          CarStatus @default(Processando)
   date_registered DateTime  @default(now())
@@ -94,6 +96,13 @@ model Image {
   url   String
   carId String
   car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id   String @id @default(uuid())
+  name String @unique
+
+  cars Car[]
 }
 
 model Garage {

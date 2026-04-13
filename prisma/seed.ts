@@ -3,12 +3,23 @@ import { PrismaClient, Prisma, FuelType } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Limpar dados (ordem segura)
   await prisma.image.deleteMany();
-  await prisma.itens.deleteMany();
-  await prisma.espec.deleteMany();
   await prisma.car.deleteMany();
-  // Marcas
+  await prisma.category.deleteMany();
+  await prisma.brand.deleteMany();
+  await prisma.espec.deleteMany();
+  await prisma.itens.deleteMany();
+
+  await prisma.category.createMany({
+    data: [
+      { name: "SUV" },
+      { name: "Super Esportivo" },
+      { name: "Esportivo" },
+      { name: "Luxo" },
+    ],
+    skipDuplicates: true,
+  });
+
   await prisma.brand.createMany({
     data: [
       { name: "Lamborghini" },
@@ -33,12 +44,13 @@ async function main() {
       name: "Lamborghini Huracán",
       model: "Huracán EVO",
       value: 2400000,
+      categoryName: "Super Esportivo",
       brandName: "Lamborghini",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Amarelo",
+        color: "Verde oliva",
         transmission: "Automático",
         engine: "V10",
         potency: "640cv",
@@ -66,12 +78,13 @@ async function main() {
       name: "Ferrari 488",
       model: "488 GTB",
       value: 1800000,
+      categoryName: "Super Esportivo",
       brandName: "Ferrari",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Ciano",
+        color: "Teal escuro",
         transmission: "Automático",
         engine: "V8",
         potency: "670cv",
@@ -99,12 +112,13 @@ async function main() {
       name: "Porsche 911",
       model: "911 Carrera",
       value: 950000,
+      categoryName: "Esportivo",
       brandName: "Porsche",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Prata",
+        color: "Azul royal",
         transmission: "Automático",
         engine: "3.0 Twin Turbo",
         potency: "385cv",
@@ -132,12 +146,13 @@ async function main() {
       name: "McLaren 720S",
       model: "720S Coupe",
       value: 2800000,
+      categoryName: "Super Esportivo",
       brandName: "McLaren",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Laranja",
+        color: "Azul marinho",
         transmission: "Automático",
         engine: "4.0 V8 Twin Turbo",
         potency: "720cv",
@@ -159,17 +174,19 @@ async function main() {
         "https://res.cloudinary.com/dchrzl7ao/image/upload/v1775084475/mclaren3_f0lj0r.jpg"
       ]
     },
+
     // Bugatti
     {
       name: "Bugatti Chiron",
       model: "Chiron Sport",
       value: 18000000,
+      categoryName: "Super Esportivo",
       brandName: "Bugatti",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Azul",
+        color: "Cinza ardósia",
         transmission: "Automático",
         engine: "8.0 W16 Quad Turbo",
         potency: "1500cv",
@@ -197,6 +214,7 @@ async function main() {
       name: "Pagani Huayra",
       model: "Huayra BC",
       value: 18000000,
+      categoryName: "Super Esportivo",
       brandName: "Pagani",
 
       espec: {
@@ -230,12 +248,13 @@ async function main() {
       name: "Koenigsegg Jesko",
       model: "Jesko Absolut",
       value: 25000000,
+      categoryName: "Super Esportivo",
       brandName: "Koenigsegg",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Branco",
+        color: "Azul pastel",
         transmission: "Automático",
         engine: "5.0 V8 Twin Turbo",
         potency: "1600cv",
@@ -263,12 +282,13 @@ async function main() {
       name: "Rolls-Royce Phantom",
       model: "Phantom VIII",
       value: 6000000,
+      categoryName: "Luxo",
       brandName: "Rolls-Royce",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Preto",
+        color: "Lavanda acinzentado",
         transmission: "Automático",
         engine: "6.75 V12 Twin Turbo",
         potency: "571cv",
@@ -296,12 +316,13 @@ async function main() {
       name: "Audi R8",
       model: "R8 V10 Performance",
       value: 1400000,
+      categoryName: "Esportivo",
       brandName: "Audi",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Preto",
+        color: "Preto e vermelho race",
         transmission: "Automático",
         engine: "5.2 V10 Aspirado",
         potency: "620cv",
@@ -329,12 +350,13 @@ async function main() {
       name: "BMW M4",
       model: "M4 Competition",
       value: 800000,
+      categoryName: "Esportivo",
       brandName: "BMW",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Azul",
+        color: "Branca",
         transmission: "Automático",
         engine: "3.0 Twin Turbo",
         potency: "510cv",
@@ -362,12 +384,13 @@ async function main() {
       name: "Mercedes-Benz AMG GT",
       model: "AMG GT 63 S",
       value: 1200000,
+      categoryName: "Esportivo",
       brandName: "Mercedes-Benz",
 
       espec: {
         year: 2023,
         fuel: FuelType.Gasolina,
-        color: "Cinza",
+        color: "Verde militar",
         transmission: "Automático",
         engine: "4.0 V8 Biturbo",
         potency: "639cv",
@@ -405,6 +428,10 @@ async function main() {
       where: { name: carro.brandName }
     });
 
+    const category = await prisma.category.findUnique({
+      where: { name: carro.categoryName } 
+    });
+
     await prisma.car.create({
       data: {
         name: carro.name,
@@ -414,6 +441,7 @@ async function main() {
         brandId: brand!.id,
         especId: espec.id,
         itensId: itens.id,
+        categoryId: category?.id,
 
         images: {
           create: carro.images.map((url) => ({ url }))
