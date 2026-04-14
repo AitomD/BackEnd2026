@@ -1,35 +1,41 @@
 import { Request, Response } from "express";
 import { createUserService, loginService } from "../services/userService";
+import type { CreateUserInput, LoginInput } from "../types/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const data = req.body;
-
+    const data = req.body as CreateUserInput;
     const newUser = await createUserService(data);
-
     return res.status(201).json(newUser);
-  } catch (error: any) {
-    return res.status(400).json({ message: error.message });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Erro desconhecido";
+    return res.status(400).json({ message });
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-    const user = await loginService(email);
-    if (!user || !(await bcrypt.compare(password, user.password)))
-      return res.status(401).json({ message: "E-mail ou senha incorretos" });
+    const { email, password } = req.body as LoginInput;
 
-    if (!user || !user.active) {
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email e senha são obrigatórios." });
+    }
+
+    const user = await loginService(email);
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "E-mail ou senha incorretos" });
+    }
+
+    if (!user.active) {
       return res
         .status(401)
         .json({ message: "Usuário inexistente ou desativado." });
     }
-
-    console.log("Secret:", process.env.JWT_SECRET);
-    console.log("Expires:", process.env.JWT_EXPIRES_IN);
 
     const token = jwt.sign(
       { id: user.id, email: user.email },
@@ -42,6 +48,8 @@ export const login = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Login realizado!", token, user: userWithoutPassword });
   } catch (error) {
-    return res.status(500).json({ message: "Erro interno no servidor" });
+    const message =
+      error instanceof Error ? error.message : "Erro interno no servidor";
+    return res.status(500).json({ message });
   }
 };

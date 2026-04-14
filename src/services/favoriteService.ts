@@ -1,6 +1,9 @@
 import prisma from "../config/database";
 
-export async function getFavoritesByUser(userId: string) {
+export async function getFavoritesByUser(userId: string, page = 1, limit = 10) {
+  const validPage = Number.isInteger(page) && page > 0 ? page : 1;
+  const validLimit = Number.isInteger(limit) && limit > 0 ? limit : 10;
+
   const favorites = await prisma.favorite.findMany({
     where: { userId },
     include: {
@@ -12,6 +15,8 @@ export async function getFavoritesByUser(userId: string) {
       },
     },
     orderBy: { createdAt: "desc" },
+    skip: (validPage - 1) * validLimit,
+    take: validLimit,
   });
 
   return favorites.map((favorite) => ({
@@ -34,8 +39,12 @@ export async function createFavorite(
 ) {
   return prisma.favorite.create({
     data: {
-      userId,
-      carId,
+      user: {
+        connect: { id: userId },
+      },
+      car: {
+        connect: { id: carId },
+      },
       message,
     },
   });
