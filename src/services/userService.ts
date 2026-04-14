@@ -5,7 +5,8 @@ import type { CreateUserInput, UpdateUserInput } from "../types/user";
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^.{6,}$/;
 
-const cleanCpf = (cpf: string) => cpf.replace(/\D/g, "");
+const cleanDigits = (value: string) => value.replace(/\D/g, "");
+const cleanCpf = (cpf: string) => cleanDigits(cpf);
 
 const isValidCpf = (cpf: string) => {
   const cleaned = cleanCpf(cpf);
@@ -52,15 +53,18 @@ const validateNewUser = async (data: CreateUserInput) => {
     throw new Error("Senha inválida. Deve ter ao menos 6 caracteres.");
   }
 
-  if (typeof data.cpf !== "string" || !isValidCpf(data.cpf)) {
+  const cpfDigits = cleanCpf(data.cpf);
+  if (!isValidCpf(cpfDigits)) {
     throw new Error("CPF inválido.");
   }
 
-  if (typeof data.cep !== "string" || data.cep.trim().length < 9) {
+  const cepDigits = cleanDigits(data.cep);
+  if (cepDigits.length !== 8) {
     throw new Error("CEP inválido ou incompleto.");
   }
 
-  if (typeof data.number !== "string" || data.number.trim().length < 14) {
+  const numberDigits = cleanDigits(data.number);
+  if (numberDigits.length < 10) {
     throw new Error("Telefone inválido ou incompleto.");
   }
 
@@ -71,10 +75,18 @@ const validateNewUser = async (data: CreateUserInput) => {
     throw new Error("E-mail já cadastrado!");
   }
 
-  const existingCpf = await prisma.user.findFirst({ where: { cpf: data.cpf } });
+  const existingCpf = await prisma.user.findFirst({
+    where: { cpf: cpfDigits },
+  });
   if (existingCpf) {
     throw new Error("CPF já cadastrado!");
   }
+
+  return {
+    cpf: cpfDigits,
+    cep: cepDigits,
+    number: numberDigits,
+  };
 };
 
 const validateUpdatedUser = async (id: string, data: UpdateUserInput) => {
@@ -84,8 +96,19 @@ const validateUpdatedUser = async (id: string, data: UpdateUserInput) => {
     );
   }
 
-  if (typeof data.cpf !== "string" || !isValidCpf(data.cpf)) {
+  const cpfDigits = cleanCpf(data.cpf);
+  if (!isValidCpf(cpfDigits)) {
     throw new Error("CPF inválido.");
+  }
+
+  const cepDigits = cleanDigits(data.cep);
+  if (cepDigits.length !== 8) {
+    throw new Error("CEP inválido ou incompleto.");
+  }
+
+  const numberDigits = cleanDigits(data.number);
+  if (numberDigits.length < 10) {
+    throw new Error("Telefone inválido ou incompleto.");
   }
 
   if (
@@ -96,15 +119,17 @@ const validateUpdatedUser = async (id: string, data: UpdateUserInput) => {
   }
 
   const existingCpf = await prisma.user.findFirst({
-    where: { cpf: data.cpf, id: { not: id } },
+    where: { cpf: cpfDigits, id: { not: id } },
   });
   if (existingCpf) {
     throw new Error("CPF já cadastrado!");
   }
+
+  return { cpf: cpfDigits, cep: cepDigits, number: numberDigits };
 };
 
 export const createUserService = async (data: CreateUserInput) => {
-  await validateNewUser(data);
+  const normalized = await validateNewUser(data);
 
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
@@ -112,9 +137,9 @@ export const createUserService = async (data: CreateUserInput) => {
     data: {
       name: data.name,
       email: data.email,
-      cpf: data.cpf,
-      cep: data.cep,
-      number: data.number,
+      cpf: normalized.cpf,
+      cep: normalized.cep,
+      number: normalized.number,
       password: hashedPassword,
       active: true,
     },
@@ -154,7 +179,7 @@ export const updateUserService = async (id: string, data: UpdateUserInput) => {
     throw new Error("Não é permitido alterar o email.");
   }
 
-  await validateUpdatedUser(id, data);
+  const normalized = await validateUpdatedUser(id, data);
 
   const updateData: {
     name: string;
@@ -164,9 +189,9 @@ export const updateUserService = async (id: string, data: UpdateUserInput) => {
     password?: string;
   } = {
     name: data.name,
-    cpf: data.cpf,
-    cep: data.cep,
-    number: data.number,
+    cpf: normalized.cpf,
+    cep: normalized.cep,
+    number: normalized.number,
   };
 
   if (data.password) {
